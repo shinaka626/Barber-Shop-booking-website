@@ -1,18 +1,14 @@
 
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-import ServiceSelection from '@/components/booking/ServiceSelection';
-import DateTimeSelection from '@/components/booking/DateTimeSelection';
-import CustomerInfo from '@/components/booking/CustomerInfo';
-import BookingSummary from '@/components/booking/BookingSummary';
-import MpesaPayment from '@/components/booking/MpesaPayment';
-import ConfirmationScreen from '@/components/booking/ConfirmationScreen';
 import { Service } from '@/data/services';
-import { Button } from '@/components/ui/button';
-import { generateBookingId, sendBookingToBarber, sendReceiptToClient } from '@/utils/bookingUtils';
 import { useToast } from '@/hooks/use-toast';
+import { generateBookingId, sendBookingToBarber, sendReceiptToClient } from '@/utils/bookingUtils';
+import BookingContainer from '@/components/booking/BookingContainer';
+import BookingSteps from '@/components/booking/BookingSteps';
+import BookingContent from '@/components/booking/BookingContent';
+import BookingNavigation from '@/components/booking/BookingNavigation';
+import BookingSummary from '@/components/booking/BookingSummary';
 
 const steps = [
   "Choose Services",
@@ -115,141 +111,57 @@ const Booking = () => {
     navigate('/');
   };
   
-  // Render the current step
-  const renderStep = () => {
-    switch (currentStep) {
-      case 0:
-        return <ServiceSelection 
-                 selectedServices={selectedServices} 
-                 setSelectedServices={setSelectedServices} 
-               />;
-      case 1:
-        return <DateTimeSelection 
-                 selectedDate={selectedDate} 
-                 setSelectedDate={setSelectedDate}
-                 selectedTime={selectedTime}
-                 setSelectedTime={setSelectedTime}
-               />;
-      case 2:
-        return <CustomerInfo 
-                 name={name} setName={setName}
-                 email={email} setEmail={setEmail}
-                 phone={phone} setPhone={setPhone}
-                 notes={notes} setNotes={setNotes}
-               />;
-      case 3:
-        return <MpesaPayment 
-                 amount={totalAmount} 
-                 onPaymentSuccess={handlePaymentSuccess}
-                 isProcessing={isProcessing}
-                 setIsProcessing={setIsProcessing}
-               />;
-      case 4:
-        return <ConfirmationScreen 
-                 bookingDetails={{
-                   services: selectedServices,
-                   date: selectedDate!,
-                   time: selectedTime!,
-                   customerName: name,
-                   customerEmail: email,
-                   customerPhone: phone,
-                   totalAmount,
-                   bookingId
-                 }}
-                 onDone={resetBooking}
-               />;
-      default:
-        return null;
-    }
-  };
-  
   return (
-    <div className="min-h-screen bg-barber-black text-barber-white">
-      <Header />
+    <BookingContainer title="Book Your">
+      {currentStep < 4 && <BookingSteps steps={steps} currentStep={currentStep} />}
       
-      <main className="py-12">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold mb-4 font-playfair">
-              Book Your <span className="gold-text">Appointment</span>
-            </h1>
-            
-            {currentStep < 4 && (
-              <div className="flex justify-between mb-6">
-                {steps.map((step, index) => (
-                  <div 
-                    key={index} 
-                    className={`hidden md:block text-sm ${
-                      index === currentStep 
-                        ? 'text-barber-gold' 
-                        : index < currentStep 
-                          ? 'text-barber-white/70' 
-                          : 'text-barber-white/30'
-                    }`}
-                  >
-                    <span className={`inline-block w-6 h-6 rounded-full text-center mr-2 ${
-                      index <= currentStep 
-                        ? 'bg-barber-gold text-barber-black' 
-                        : 'bg-barber-white/10 text-barber-white/50'
-                    }`}>
-                      {index + 1}
-                    </span>
-                    {step}
-                  </div>
-                ))}
-              </div>
-            )}
-            
-            <div className="md:hidden mb-4">
-              <p className="text-sm text-barber-white/70">Step {currentStep + 1} of {steps.length}</p>
-              <p className="text-lg font-medium">{steps[currentStep]}</p>
-            </div>
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="md:col-span-2">
+          <BookingContent
+            currentStep={currentStep}
+            selectedServices={selectedServices}
+            setSelectedServices={setSelectedServices}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+            selectedTime={selectedTime}
+            setSelectedTime={setSelectedTime}
+            name={name}
+            setName={setName}
+            email={email}
+            setEmail={setEmail}
+            phone={phone}
+            setPhone={setPhone}
+            notes={notes}
+            setNotes={setNotes}
+            handlePaymentSuccess={handlePaymentSuccess}
+            isProcessing={isProcessing}
+            setIsProcessing={setIsProcessing}
+            totalAmount={totalAmount}
+            resetBooking={resetBooking}
+            bookingId={bookingId}
+          />
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="md:col-span-2">
-              {renderStep()}
-              
-              {currentStep < 3 && (
-                <div className="flex justify-between mt-8">
-                  {currentStep > 0 ? (
-                    <Button 
-                      onClick={handleBack} 
-                      variant="outline"
-                      className="border-barber-white/20 text-barber-white hover:bg-barber-gold/5 hover:border-barber-gold/50"
-                    >
-                      Back
-                    </Button>
-                  ) : (
-                    <div></div>
-                  )}
-                  
-                  <Button 
-                    onClick={handleNext}
-                    className="bg-barber-gold hover:bg-barber-gold/90 text-barber-black"
-                  >
-                    Continue
-                  </Button>
-                </div>
-              )}
-            </div>
-            
-            <div>
-              {currentStep < 4 && selectedServices.length > 0 && (
-                <BookingSummary 
-                  selectedServices={selectedServices}
-                  selectedDate={selectedDate}
-                  selectedTime={selectedTime}
-                  customerName={name}
-                />
-              )}
-            </div>
-          </div>
+          {currentStep < 3 && (
+            <BookingNavigation
+              currentStep={currentStep}
+              handleBack={handleBack}
+              handleNext={handleNext}
+            />
+          )}
         </div>
-      </main>
-      
-      <Footer />
-    </div>
+        
+        <div>
+          {currentStep < 4 && selectedServices.length > 0 && (
+            <BookingSummary 
+              selectedServices={selectedServices}
+              selectedDate={selectedDate}
+              selectedTime={selectedTime}
+              customerName={name}
+            />
+          )}
+        </div>
+      </div>
+    </BookingContainer>
   );
 };
 
