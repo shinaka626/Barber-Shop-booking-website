@@ -1,7 +1,8 @@
+
 import { Service } from '@/data/services';
 
 // The barber's WhatsApp phone number (with country code)
-const BARBER_PHONE_NUMBER = "+1234567890"; // Replace this with your actual phone number
+const BARBER_PHONE_NUMBER = "+254759507039"; // Barber's phone number with country code
 
 // Function to send booking to barber via WhatsApp
 export const sendBookingToBarber = (
