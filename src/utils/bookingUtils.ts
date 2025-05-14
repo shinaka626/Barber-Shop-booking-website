@@ -1,5 +1,7 @@
-
 import { Service } from '@/data/services';
+
+// The barber's WhatsApp phone number (with country code)
+const BARBER_PHONE_NUMBER = "+1234567890"; // Replace this with your actual phone number
 
 // Function to send booking to barber via WhatsApp
 export const sendBookingToBarber = (
@@ -11,7 +13,7 @@ export const sendBookingToBarber = (
   notes: string = ''
 ): Promise<boolean> => {
   return new Promise((resolve) => {
-    console.log('Sending booking to barber via WhatsApp:', {
+    console.log(`Sending booking to barber at ${BARBER_PHONE_NUMBER} via WhatsApp:`, {
       services,
       date,
       time,
