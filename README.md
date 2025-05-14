@@ -1,4 +1,4 @@
-# Welcome to your Lovable project
+# Welcome to shinaka sheldon project 
 
 ## Project info
 
